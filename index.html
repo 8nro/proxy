@@ -64,19 +64,92 @@
         <section>
             <h2>Working</h2>
             <div class="main-links">
-                <a href="https://unacceptable-ocelot-osmerge-215d10c4.koyeb.app/" class="link green" target="_blank">https://unacceptable-ocelot-osmerge-215d10c4.koyeb.app/ [200: OK]</a>
-                <a href="https://8nro.github.io/proxy/" class="link green" target="_blank">More Coming Soon</a>
                 <div class="yellow-links">
-                    <a href="https://8nro.github.io/proxy/" class="link yellow" target="_blank">Coming Soon</a>
                 </div>
             </div>
         </section>
         <section>
             <h2>Archive</h2>
             <div class="archive-links">
-                <a href="https://8nro.github.io/proxy/" class="link yellow" target="_blank">Coming Soon</a>
             </div>
         </section>
     </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            fetch('proxylist.txt')
+                .then(response => response.text())
+                .then(data => {
+                    // Split data by lines
+                    const proxies = data.split("\n");
+    
+                    // Containers for different types of links
+                    const workingLinks = document.querySelector('.main-links');
+                    const archiveLinks = document.querySelector('.archive-links');
+                    const yellowLinksContainer = document.querySelector('.yellow-links');
+    
+                    let hasWorking = false;
+                    let hasArchive = false;
+                    let hasUnknown = false;
+    
+                    proxies.forEach(line => {
+                        const match = line.match(/(https?:\/\/[^\s]+)\s+\[(\d+:\s[^\]]+)\]/);
+                        if (match) {
+                            const url = match[1];
+                            const status = match[2];
+                            let linkElement;
+    
+                            if (status.includes("200: OK")) {
+                                linkElement = createLink(url, 'green');
+                                hasWorking = true;
+                            } else if (status.includes("404: NOT FOUND") || status.includes("525: SSL HANDSHAKE FAILED")) {
+                                linkElement = createLink(url, 'red');
+                                hasArchive = true;
+                            } else if (status.includes("UNKNOWN")) {
+                                linkElement = createLink(url, 'yellow');
+                                hasUnknown = true;
+                            }
+    
+                            if (linkElement) {
+                                if (status.includes("200: OK") || status.includes("UNKNOWN")) {
+                                    workingLinks.appendChild(linkElement);
+                                } else if (status.includes("404: NOT FOUND") || status.includes("525: SSL HANDSHAKE FAILED")) {
+                                    archiveLinks.appendChild(linkElement);
+                                }
+                            }
+                        }
+                    });
+    
+                    if (!hasWorking) {
+                        workingLinks.innerHTML += createFallbackButton('No working proxies here yet');
+                    }
+                    if (!hasArchive) {
+                        archiveLinks.innerHTML += createFallbackButton('No archived proxies here yet');
+                    }
+    
+                    if (!hasUnknown) {
+                        yellowLinksContainer.style.padding = '0';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching the proxy list:', error);
+                });
+        });
+    
+        function createLink(url, color) {
+            const link = document.createElement('a');
+            link.href = url;
+            link.classList.add('link', color);
+            link.textContent = url + ' [' + color.toUpperCase() + ']';
+            return link;
+        }
+    
+        function createFallbackButton(text) {
+            const button = document.createElement('a');
+            button.href = 'https://8nro.github.io/proxy/';
+            button.classList.add('link', 'yellow');
+            button.textContent = text;
+            return button;
+        }
+    </script>        
 </body>
 </html>
