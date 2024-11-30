@@ -79,13 +79,11 @@
             fetch('proxylist.txt')
                 .then(response => response.text())
                 .then(data => {
-                    // Split data by lines
                     const proxies = data.split("\n");
     
-                    // Containers for different types of links
                     const workingLinks = document.querySelector('.main-links');
                     const archiveLinks = document.querySelector('.archive-links');
-                    const yellowLinksContainer = document.querySelector('.yellow-links');
+                    const unknownLinks = document.querySelector('.yellow-links');
     
                     let hasWorking = false;
                     let hasArchive = false;
@@ -110,8 +108,10 @@
                             }
     
                             if (linkElement) {
-                                if (status.includes("200: OK") || status.includes("UNKNOWN")) {
+                                if (status.includes("200: OK")) {
                                     workingLinks.appendChild(linkElement);
+                                } else if (status.includes("UNKNOWN")) {
+                                    unknownLinks.appendChild(linkElement);
                                 } else if (status.includes("404: NOT FOUND") || status.includes("525: SSL HANDSHAKE FAILED")) {
                                     archiveLinks.appendChild(linkElement);
                                 }
@@ -127,7 +127,7 @@
                     }
     
                     if (!hasUnknown) {
-                        yellowLinksContainer.style.padding = '0';
+                        unknownLinks.style.padding = '0';
                     }
                 })
                 .catch(error => {
