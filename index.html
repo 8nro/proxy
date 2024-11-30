@@ -47,7 +47,7 @@
         section {
             margin-bottom: 2em;
         }
-        .main-links, .archive-links {
+        .main-links, .archive-links, .yellow-links {
             padding: 1em;
             background: #333;
             border-radius: 5px;
@@ -64,13 +64,19 @@
         <section>
             <h2>Working</h2>
             <div class="main-links">
-                <div class="yellow-links">
-                </div>
+                <!-- Working links will be appended here -->
             </div>
         </section>
         <section>
             <h2>Archive</h2>
             <div class="archive-links">
+                <!-- Archived links will be appended here -->
+            </div>
+        </section>
+        <section>
+            <h2>Unknown</h2>
+            <div class="yellow-links">
+                <!-- Unknown links will be appended here -->
             </div>
         </section>
     </div>
@@ -97,13 +103,13 @@
                             let linkElement;
     
                             if (status.includes("200: OK")) {
-                                linkElement = createLink(url, 'green');
+                                linkElement = createLink(url, 'green', '200: OK');
                                 hasWorking = true;
                             } else if (status.includes("404: NOT FOUND") || status.includes("525: SSL HANDSHAKE FAILED")) {
-                                linkElement = createLink(url, 'red');
+                                linkElement = createLink(url, 'red', status);
                                 hasArchive = true;
                             } else if (status.includes("UNKNOWN")) {
-                                linkElement = createLink(url, 'yellow');
+                                linkElement = createLink(url, 'yellow', 'UNKNOWN');
                                 hasUnknown = true;
                             }
     
@@ -125,7 +131,6 @@
                     if (!hasArchive) {
                         archiveLinks.innerHTML += createFallbackButton('No archived proxies here yet');
                     }
-    
                     if (!hasUnknown) {
                         unknownLinks.style.padding = '0';
                     }
@@ -135,11 +140,11 @@
                 });
         });
     
-        function createLink(url, color) {
+        function createLink(url, color, statusText) {
             const link = document.createElement('a');
             link.href = url;
             link.classList.add('link', color);
-            link.textContent = url + ' [' + color.toUpperCase() + ']';
+            link.textContent = `${url} [${statusText}]`;
             return link;
         }
     
