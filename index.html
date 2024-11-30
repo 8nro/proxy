@@ -68,15 +68,15 @@
             </div>
         </section>
         <section>
-            <h2>Archive</h2>
-            <div class="archive-links">
-                <!-- Archived links will be appended here -->
-            </div>
-        </section>
-        <section>
             <h2>Unknown</h2>
             <div class="yellow-links">
                 <!-- Unknown links will be appended here -->
+            </div>
+        </section>
+        <section>
+            <h2>Archive</h2>
+            <div class="archive-links">
+                <!-- Archived links will be appended here -->
             </div>
         </section>
     </div>
@@ -96,7 +96,7 @@
                     let hasUnknown = false;
     
                     proxies.forEach(line => {
-                        const match = line.match(/(https?:\/\/[^\s]+)\s+\[(\d+:\s[^\]]+)\]/);
+                        const match = line.match(/(https?:\/\/[^\s]+)\s+\[(\d{3}: [^\]]+|UNKNOWN)\]/);
                         if (match) {
                             const url = match[1];
                             const status = match[2];
@@ -126,13 +126,13 @@
                     });
     
                     if (!hasWorking) {
-                        workingLinks.innerHTML += createFallbackButton('No working proxies here yet');
+                        workingLinks.innerHTML += createFallbackButton('No working proxies');
                     }
                     if (!hasArchive) {
-                        archiveLinks.innerHTML += createFallbackButton('No archived proxies here yet');
+                        archiveLinks.innerHTML += createFallbackButton('No archived proxies');
                     }
                     if (!hasUnknown) {
-                        unknownLinks.style.padding = '0';
+                        archiveLinks.innerHTML += createFallbackButton('No unknown proxies');
                     }
                 })
                 .catch(error => {
